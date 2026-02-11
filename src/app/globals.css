@@ -3,11 +3,22 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* OS Theme Colors */
+  --desktop-bg: #000000;
+  --dock-bg: rgba(255, 255, 255, 0.1);
+  --dock-border: rgba(255, 255, 255, 0.2);
+  --window-bg: rgba(20, 20, 20, 0.85);
+  --window-border: rgba(255, 255, 255, 0.1);
+  --accent: #3b82f6;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-desktop: var(--desktop-bg);
+  --color-dock: var(--dock-bg);
+  --color-window: var(--window-bg);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -20,7 +31,35 @@
 }
 
 body {
-  background: var(--background);
+  background: var(--desktop-bg);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  overflow: hidden; /* Prevent scrolling for desktop feel */
+  user-select: none; /* Desktop feel */
+}
+
+/* Custom Utilities for Glassmorphism */
+.glass {
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-light {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Animations */
+@keyframes shake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+.animate-shake {
+  animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
 }
