@@ -36,6 +36,10 @@ export function ContactApp() {
                         <Linkedin size={20} className="text-blue-400" />
                         <span>LinkedIn</span>
                     </a>
+                    <a href="mailto:hari@gmail.com" className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition">
+                        <Mail size={20} className="text-red-400" />
+                        <span>hari@gmail.com</span>
+                    </a>
                 </div>
 
                 <div className="mt-auto text-sm text-gray-500">

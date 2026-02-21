@@ -34,6 +34,22 @@ const PROJECTS = [
         link: '#',
         github: '#'
     },
+    {
+        id: 5,
+        title: 'OS Style Portfolio',
+        description: 'A professional, OS-style portfolio website inspired by macOS and Linux.',
+        tech: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion'],
+        link: 'https://harichandramathi.vercel.app/',
+        github: 'https://github.com/harichandramathi27/portfolio'
+    },
+    {
+        id: 6,
+        title: 'Real-time Chat Application',
+        description: 'A robust real-time communication platform built with modern technologies.',
+        tech: ['React', 'Node.js', 'Socket.io', 'MongoDB'],
+        link: '#',
+        github: '#'
+    },
 ];
 
 export function ProjectsApp() {

@@ -24,6 +24,20 @@ const CERTIFICATES = [
         date: '2024',
         link: '#',
     },
+    {
+        id: 4,
+        title: 'Advanced React Patterns',
+        issuer: 'Frontend Masters',
+        date: '2025',
+        link: '#',
+    },
+    {
+        id: 5,
+        title: 'Python for Data Science',
+        issuer: 'IBM',
+        date: '2024',
+        link: '#',
+    },
 ];
 
 export function CertificatesApp() {
