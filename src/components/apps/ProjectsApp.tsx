@@ -22,7 +22,7 @@ const PROJECTS = [
     {
         id: 3,
         title: 'AI Smart Productivity platform',
-        description: '',
+        description: 'An AI Task Manager is a smart productivity tool uses artificial intelligence to help users more efficiently.',
         tech: ['React', 'Fast API', 'OpenAI'],
         link: 'https://claude.ai/public/artifacts/3b762eee-cc77-471e-bde7-beab657bd5b0'
     },
