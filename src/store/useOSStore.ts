@@ -3,20 +3,24 @@ import { create } from 'zustand';
 export interface WindowState {
     id: string;
     title: string;
-    component: string; // The key to render the specific app
+    description?: string;
+    component: string;
     isOpen: boolean;
     isMinimized: boolean;
     isMaximized: boolean;
     zIndex: number;
     position: { x: number; y: number };
-    size: { width: number; height: number };
+    size: { width: string | number; height: string | number };
+    lastState?: {
+        position: { x: number; y: number };
+        size: { width: string | number; height: string | number };
+    };
 }
 
 interface OSState {
     isBooting: boolean;
     isLocked: boolean;
     isSearchOpen: boolean;
-    password: string;
     windows: WindowState[];
     activeWindowId: string | null;
 
@@ -24,18 +28,14 @@ interface OSState {
     setBooting: (isBooting: boolean) => void;
     setLocked: (isLocked: boolean) => void;
     setSearchOpen: (isOpen: boolean) => void;
-    setPassword: (password: string) => void;
     openWindow: (appId: string) => void;
     closeWindow: (id: string) => void;
     minimizeWindow: (id: string) => void;
     maximizeWindow: (id: string) => void;
     focusWindow: (id: string) => void;
-    updateWindowPosition: (id: string, position: { x: number; y: number }) => void;
-    updateWindowSize: (id: string, size: { width: number; height: number }) => void;
+    updateWindow: (id: string, updates: Partial<WindowState>) => void;
 
     // Personalization
-    wallpaper: string;
-    setWallpaper: (wallpaper: string) => void;
     accentColor: string;
     setAccentColor: (color: string) => void;
     taskbarAlignment: 'center' | 'left';
@@ -44,15 +44,12 @@ interface OSState {
 
 export const useOSStore = create<OSState>((set, get) => ({
     isBooting: true,
-    isLocked: true,
+    isLocked: false,
     isSearchOpen: false,
-    password: 'hari276', // Default password
     windows: [],
     activeWindowId: null,
 
     // Personalization Defaults
-    wallpaper: "url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop')", // Abstract Tech/Space
-    setWallpaper: (wallpaper) => set({ wallpaper }),
     accentColor: 'blue',
     setAccentColor: (accentColor) => set({ accentColor }),
     taskbarAlignment: 'center',
@@ -61,35 +58,50 @@ export const useOSStore = create<OSState>((set, get) => ({
     setBooting: (isBooting) => set({ isBooting }),
     setLocked: (isLocked) => set({ isLocked }),
     setSearchOpen: (isSearchOpen) => set({ isSearchOpen }),
-    setPassword: (password) => set({ password }),
 
     openWindow: (appId) => {
         const { windows } = get();
-        // Check if window already exists
         const existingWindow = windows.find((w) => w.id === appId);
 
         if (existingWindow) {
-            // If it exists but is minimized or behind, bring to front/restore
             set((state) => ({
                 windows: state.windows.map((w) =>
-                    w.id === appId ? { ...w, isMinimized: false } : w
+                    w.id === appId ? { ...w, isMinimized: false, isOpen: true } : w
                 ),
                 activeWindowId: appId,
             }));
+            get().focusWindow(appId);
             return;
+        }
+
+        const defaultWidth = 800;
+        const defaultHeight = 600;
+
+        // Calculate center position with stagger offset
+        const staggerX = (windows.length % 10) * 32;
+        const staggerY = (windows.length % 10) * 32;
+
+        let centerX = 100;
+        let centerY = 100;
+
+        if (typeof window !== 'undefined') {
+            centerX = (window.innerWidth - defaultWidth) / 2;
+            centerY = (window.innerHeight - defaultHeight) / 2;
         }
 
         const newWindow: WindowState = {
             id: appId,
-            title: appId.charAt(0).toUpperCase() + appId.slice(1), // Default title
+            title: appId.charAt(0).toUpperCase() + appId.slice(1),
             component: appId,
             isOpen: true,
             isMinimized: false,
             isMaximized: false,
-            zIndex: windows.length + 1,
-            // Randomize slightly to avoid stacking perfectly
-            position: { x: 100 + windows.length * 20, y: 100 + windows.length * 20 },
-            size: { width: 600, height: 400 },
+            zIndex: windows.length + 10,
+            position: {
+                x: centerX + staggerX,
+                y: centerY + staggerY
+            },
+            size: { width: defaultWidth, height: defaultHeight },
         };
 
         set((state) => ({
@@ -118,8 +130,6 @@ export const useOSStore = create<OSState>((set, get) => ({
     })),
 
     focusWindow: (id) => set((state) => {
-        // Bring to front logic could be moving to end of array or updating zIndex
-        // For now, simpler zIndex management: active is highest
         const maxZ = Math.max(...state.windows.map((w) => w.zIndex), 0);
         return {
             activeWindowId: id,
@@ -129,11 +139,7 @@ export const useOSStore = create<OSState>((set, get) => ({
         };
     }),
 
-    updateWindowPosition: (id, position) => set((state) => ({
-        windows: state.windows.map((w) => w.id === id ? { ...w, position } : w)
-    })),
-
-    updateWindowSize: (id, size) => set((state) => ({
-        windows: state.windows.map((w) => w.id === id ? { ...w, size } : w)
+    updateWindow: (id, updates) => set((state) => ({
+        windows: state.windows.map((w) => w.id === id ? { ...w, ...updates } : w)
     })),
 }));

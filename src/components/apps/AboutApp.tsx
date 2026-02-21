@@ -36,7 +36,7 @@ export function AboutApp() {
                     <h2 className="flex items-center gap-2 text-xl font-semibold mb-6">
                         <Code size={20} style={{ color: accentColor }} /> Tech Stack
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         {[
                             {
                                 category: "Frontend",

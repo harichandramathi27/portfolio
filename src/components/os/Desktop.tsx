@@ -7,7 +7,7 @@ import { useOSStore } from '@/store/useOSStore';
 import { useEffect } from 'react';
 
 export function Desktop() {
-    const { wallpaper, isSearchOpen, setSearchOpen } = useOSStore();
+    const { isSearchOpen, setSearchOpen } = useOSStore();
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -23,8 +23,7 @@ export function Desktop() {
 
     return (
         <main
-            className="relative h-full w-full bg-[url('/wallpaper.jpg')] bg-cover bg-center overflow-hidden"
-            style={{ backgroundImage: wallpaper }}
+            className="fixed inset-0 h-full w-full overflow-hidden flex items-center justify-center group"
             onContextMenu={(e) => {
                 e.preventDefault();
                 // TODO: Implement Custom Context Menu

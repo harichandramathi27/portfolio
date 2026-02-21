@@ -2,25 +2,26 @@
 
 import { useOSStore } from '@/store/useOSStore';
 import { BootScreen } from '@/components/os/BootScreen';
-import { LoginScreen } from '@/components/os/LoginScreen';
+import { AnimatedBackground } from '@/components/os/AnimatedBackground';
 import { AnimatePresence } from 'framer-motion';
 
 export default function OSLayout({ children }: { children: React.ReactNode }) {
-    const { isBooting, isLocked } = useOSStore();
+    const { isBooting } = useOSStore();
 
     return (
         <>
             <AnimatePresence mode="wait">
-                {isBooting ? (
+                {isBooting && (
                     <BootScreen key="boot" />
-                ) : isLocked ? (
-                    <LoginScreen key="login" />
-                ) : null}
+                )}
             </AnimatePresence>
 
-            {!isBooting && !isLocked && (
-                <div className="relative h-screen w-screen overflow-hidden bg-desktop text-foreground">
-                    {children}
+            {!isBooting && (
+                <div className="relative h-screen w-screen overflow-hidden text-foreground">
+                    <AnimatedBackground />
+                    <div className="relative w-full h-full p-4 z-0">
+                        {children}
+                    </div>
                 </div>
             )}
         </>

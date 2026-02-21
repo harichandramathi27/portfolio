@@ -20,9 +20,9 @@ export function ContactApp() {
     };
 
     return (
-        <div className="h-full w-full bg-zinc-900 text-white flex flex-col md:flex-row overflow-hidden">
+        <div className="h-full w-full bg-zinc-900 text-white flex flex-col sm:flex-row overflow-hidden">
             {/* Sidebar / Info */}
-            <div className="w-full md:w-1/3 bg-black/20 p-6 flex flex-col gap-6 border-r border-white/5">
+            <div className="w-full sm:w-1/3 bg-black/20 p-6 flex flex-col gap-6 border-r border-white/5">
                 <h2 className="text-2xl font-bold flex items-center gap-2">
                     <Mail className="text-blue-500" /> Contact
                 </h2>
@@ -35,10 +35,6 @@ export function ContactApp() {
                     <a href="https://www.linkedin.com/in/harichandramathi-p-8a232a354" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition">
                         <Linkedin size={20} className="text-blue-400" />
                         <span>LinkedIn</span>
-                    </a>
-                    <a href="#" className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition">
-                        <Twitter size={20} className="text-sky-400" />
-                        <span>Twitter</span>
                     </a>
                 </div>
 

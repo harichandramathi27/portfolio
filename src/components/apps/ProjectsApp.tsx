@@ -7,7 +7,7 @@ const PROJECTS = [
         id: 1,
         title: 'Attendance Management System',
         description: 'An Attendance Management System is a digital solution used to record and monitor attendance efficiently.',
-        tech: ['React', 'Flask','python'],
+        tech: ['React', 'Flask', 'python'],
         link: 'https://attendance-management-system-3-lz2g.onrender.com/login',
         github: 'https://github.com/harichandramathi27/attendance-management-system'
     },
@@ -15,17 +15,16 @@ const PROJECTS = [
         id: 2,
         title: 'Blog Application',
         description: 'A comprehensive blog application that allows users to create, edit, and delete blog posts. ',
-        tech: ['react', 'Flask', 'json','python'],
+        tech: ['react', 'Flask', 'json', 'python'],
         link: 'https://blog-application-3-h22k.onrender.com/admin/login',
         github: 'https://github.com/harichandramathi27/blog-application'
     },
     {
         id: 3,
-        title: 'AI Chat Dashboard',
-        description: 'Real-time chat interface powered by LLMs with streaming responses.',
-        tech: ['React', 'WebSocket', 'Node.js', 'OpenAI API'],
-        link: '#',
-        github: '#'
+        title: 'AI Smart Productivity platform',
+        description: '',
+        tech: ['React', 'Fast API', 'OpenAI'],
+        link: 'https://claude.ai/public/artifacts/3b762eee-cc77-471e-bde7-beab657bd5b0'
     },
     {
         id: 4,
@@ -45,7 +44,7 @@ export function ProjectsApp() {
                 <h2 className="text-2xl font-bold">My Projects</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {PROJECTS.map((project) => (
                     <div
                         key={project.id}
