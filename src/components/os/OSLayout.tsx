@@ -19,7 +19,7 @@ export default function OSLayout({ children }: { children: React.ReactNode }) {
             {!isBooting && (
                 <div className="relative h-screen w-screen overflow-hidden text-foreground">
                     <AnimatedBackground />
-                    <div className="relative w-full h-full p-4 z-0">
+                    <div className="relative w-full h-full p-0 md:p-4 z-0">
                         {children}
                     </div>
                 </div>

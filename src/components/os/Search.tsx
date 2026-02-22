@@ -19,7 +19,17 @@ export function Search() {
     const { isSearchOpen, setSearchOpen, openWindow, accentColor, windows } = useOSStore();
     const [query, setQuery] = useState('');
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [isMobile, setIsMobile] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const filteredApps = APPS.filter(app =>
         app.label.toLowerCase().includes(query.toLowerCase()) ||
@@ -65,7 +75,10 @@ export function Search() {
     return (
         <AnimatePresence>
             {isSearchOpen && (
-                <div className="fixed inset-0 z-[200] flex items-start justify-center pt-[15vh] px-4">
+                <div className={cn(
+                    "fixed inset-0 z-[200] flex items-start justify-center px-4",
+                    isMobile ? "pt-[10vh]" : "pt-[15vh]"
+                )}>
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -83,7 +96,10 @@ export function Search() {
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Search Input Area */}
-                        <div className="flex items-center gap-4 border-b border-white/10 p-6">
+                        <div className={cn(
+                            "flex items-center gap-4 border-b border-white/10",
+                            isMobile ? "p-4" : "p-6"
+                        )}>
                             <SearchIcon className="h-6 w-6 text-white/50" />
                             <input
                                 ref={inputRef}
@@ -146,7 +162,10 @@ export function Search() {
                         </div>
 
                         {/* Footer Area */}
-                        <div className="flex items-center justify-between border-t border-white/5 bg-black/40 px-6 py-4 text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
+                        <div className={cn(
+                            "flex items-center justify-between border-t border-white/5 bg-black/40 px-6 py-4 text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]",
+                            isMobile && "hidden"
+                        )}>
                             <div className="flex items-center gap-6">
                                 <div className="flex items-center gap-2">
                                     <span className="rounded-lg bg-white/5 px-2 py-1 border border-white/10 text-white/40 font-mono text-[11px]">↵</span>

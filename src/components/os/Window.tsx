@@ -65,6 +65,16 @@ export function Window({ window: windowData, children }: WindowProps) {
     const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const panelRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const isActive = activeWindowId === windowData.id;
 
@@ -161,7 +171,7 @@ export function Window({ window: windowData, children }: WindowProps) {
     return (
         <>
             <motion.div
-                drag={!windowData.isMaximized}
+                drag={!windowData.isMaximized && !isMobile}
                 dragListener={false}
                 dragControls={dragControls}
                 dragMomentum={false}
@@ -170,10 +180,10 @@ export function Window({ window: windowData, children }: WindowProps) {
                 animate={{
                     scale: 1,
                     opacity: isActive ? 1 : 0.8,
-                    x: windowData.isMaximized ? 0 : windowData.position.x,
-                    y: windowData.isMaximized ? 0 : windowData.position.y,
-                    width: windowData.isMaximized ? '100%' : windowData.size.width,
-                    height: windowData.isMaximized ? '100%' : windowData.size.height,
+                    x: (windowData.isMaximized || isMobile) ? 0 : windowData.position.x,
+                    y: (windowData.isMaximized || isMobile) ? 0 : windowData.position.y,
+                    width: (windowData.isMaximized || isMobile) ? '100%' : windowData.size.width,
+                    height: (windowData.isMaximized || isMobile) ? '100%' : windowData.size.height,
                     zIndex: windowData.zIndex
                 }}
                 transition={{ type: "spring", stiffness: 220, damping: 22 }}
@@ -185,11 +195,11 @@ export function Window({ window: windowData, children }: WindowProps) {
                 }}
                 className={cn(
                     "flex flex-col overflow-hidden backdrop-blur-2xl border border-white/20 shadow-2xl no-scrollbar",
-                    windowData.isMaximized ? "rounded-none" : "rounded-2xl",
+                    (windowData.isMaximized || isMobile) ? "rounded-none" : "rounded-2xl",
                     isActive ? "bg-white/10 ring-1 ring-white/30" : "bg-black/40 scale-[0.98] blur-[0.5px]"
                 )}
             >
-                {!windowData.isMaximized && (
+                {!windowData.isMaximized && !isMobile && (
                     <>
                         <div className="absolute top-0 left-0 w-2 h-full cursor-w-resize z-50 hover:bg-white/5" onMouseDown={startResizing('w')} />
                         <div className="absolute top-0 right-0 w-2 h-full cursor-e-resize z-50 hover:bg-white/5" onMouseDown={startResizing('e')} />
@@ -203,12 +213,19 @@ export function Window({ window: windowData, children }: WindowProps) {
 
                 {/* Header */}
                 <div
-                    className="flex h-12 items-center justify-between bg-white/5 pl-6 pr-0 border-b border-white/10 shrink-0 select-none overflow-visible cursor-grab active:cursor-grabbing"
+                    className={cn(
+                        "flex h-12 items-center justify-between bg-white/5 pl-6 pr-0 border-b border-white/10 shrink-0 select-none overflow-visible",
+                        isMobile ? "cursor-default" : "cursor-grab active:cursor-grabbing"
+                    )}
                     onPointerDown={(e) => {
+                        if (isMobile) {
+                            focusWindow(windowData.id);
+                            return;
+                        }
                         focusWindow(windowData.id);
                         dragControls.start(e);
                     }}
-                    onDoubleClick={() => maximizeWindow(windowData.id)}
+                    onDoubleClick={() => !isMobile && maximizeWindow(windowData.id)}
                 >
                     <div className="flex items-center gap-2">
                         <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] leading-none">
@@ -224,62 +241,64 @@ export function Window({ window: windowData, children }: WindowProps) {
                             <Minus className="w-4 h-4 text-white/60 group-hover/btn:text-white transition-colors" />
                         </button>
 
-                        <div className="relative h-full">
-                            <button
-                                ref={buttonRef}
-                                onClick={(e) => { e.stopPropagation(); maximizeWindow(windowData.id); }}
-                                onMouseEnter={handleMaximizeMouseEnter}
-                                onMouseLeave={handleMaximizeMouseLeave}
-                                className="flex items-center justify-center w-12 h-full hover:bg-white/10 transition-colors group/btn"
-                            >
-                                <div className="w-3 h-3 border border-white/60 group-hover/btn:border-white transition-colors" />
-                            </button>
+                        {!isMobile && (
+                            <div className="relative h-full">
+                                <button
+                                    ref={buttonRef}
+                                    onClick={(e) => { e.stopPropagation(); maximizeWindow(windowData.id); }}
+                                    onMouseEnter={handleMaximizeMouseEnter}
+                                    onMouseLeave={handleMaximizeMouseLeave}
+                                    className="flex items-center justify-center w-12 h-full hover:bg-white/10 transition-colors group/btn"
+                                >
+                                    <div className="w-3 h-3 border border-white/60 group-hover/btn:border-white transition-colors" />
+                                </button>
 
-                            <AnimatePresence>
-                                {showSnapLayouts && (
-                                    <motion.div
-                                        ref={panelRef}
-                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        onMouseEnter={handlePanelMouseEnter}
-                                        onMouseLeave={handlePanelMouseLeave}
-                                        className="absolute top-full right-0 mt-2 z-[100] w-64 p-4 rounded-xl border border-white/20 bg-black/80 backdrop-blur-xl shadow-2xl grid grid-cols-2 gap-3"
-                                    >
-                                        {SNAP_LAYOUTS.map((layout) => (
-                                            <div
-                                                key={layout.id}
-                                                className="group/layout cursor-pointer flex flex-col gap-2"
-                                            >
-                                                <div className="aspect-[4/3] border border-white/10 rounded-md p-1 grid gap-1 relative overflow-hidden bg-white/5 group-hover/layout:bg-white/10 transition-colors">
-                                                    {layout.zones.map((zone, idx) => (
-                                                        <div
-                                                            key={idx}
-                                                            onClick={(e) => { e.stopPropagation(); applyLayout(zone); }}
-                                                            className="border border-white/20 rounded-sm hover:bg-blue-500/40 hover:border-blue-400 transition-all flex items-center justify-center group/zone"
-                                                            style={{
-                                                                position: 'absolute',
-                                                                left: zone.x,
-                                                                top: zone.y,
-                                                                width: zone.w,
-                                                                height: zone.h,
-                                                                padding: '2px', // gap simulation
-                                                                backgroundClip: 'content-box'
-                                                            }}
-                                                        >
-                                                            <div className="w-full h-full rounded-[1px] bg-white/5 group-hover/zone:bg-blue-400/20" />
-                                                        </div>
-                                                    ))}
+                                <AnimatePresence>
+                                    {showSnapLayouts && (
+                                        <motion.div
+                                            ref={panelRef}
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            onMouseEnter={handlePanelMouseEnter}
+                                            onMouseLeave={handlePanelMouseLeave}
+                                            className="absolute top-full right-0 mt-2 z-[100] w-64 p-4 rounded-xl border border-white/20 bg-black/80 backdrop-blur-xl shadow-2xl grid grid-cols-2 gap-3"
+                                        >
+                                            {SNAP_LAYOUTS.map((layout) => (
+                                                <div
+                                                    key={layout.id}
+                                                    className="group/layout cursor-pointer flex flex-col gap-2"
+                                                >
+                                                    <div className="aspect-[4/3] border border-white/10 rounded-md p-1 grid gap-1 relative overflow-hidden bg-white/5 group-hover/layout:bg-white/10 transition-colors">
+                                                        {layout.zones.map((zone, idx) => (
+                                                            <div
+                                                                key={idx}
+                                                                onClick={(e) => { e.stopPropagation(); applyLayout(zone); }}
+                                                                className="border border-white/20 rounded-sm hover:bg-blue-500/40 hover:border-blue-400 transition-all flex items-center justify-center group/zone"
+                                                                style={{
+                                                                    position: 'absolute',
+                                                                    left: zone.x,
+                                                                    top: zone.y,
+                                                                    width: zone.w,
+                                                                    height: zone.h,
+                                                                    padding: '2px', // gap simulation
+                                                                    backgroundClip: 'content-box'
+                                                                }}
+                                                            >
+                                                                <div className="w-full h-full rounded-[1px] bg-white/5 group-hover/zone:bg-blue-400/20" />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <span className="text-[9px] font-bold uppercase tracking-wider text-white/40 group-hover/layout:text-white/80 transition-colors px-1">
+                                                        {layout.label}
+                                                    </span>
                                                 </div>
-                                                <span className="text-[9px] font-bold uppercase tracking-wider text-white/40 group-hover/layout:text-white/80 transition-colors px-1">
-                                                    {layout.label}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
+                                            ))}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        )}
 
                         <button
                             onClick={(e) => { e.stopPropagation(); closeWindow(windowData.id); }}
@@ -291,7 +310,10 @@ export function Window({ window: windowData, children }: WindowProps) {
                 </div>
 
                 {/* Content Area */}
-                <div className="flex-1 overflow-auto bg-black/20 p-6 no-scrollbar relative font-inter">
+                <div className={cn(
+                    "flex-1 overflow-auto bg-black/20 no-scrollbar relative font-inter",
+                    isMobile ? "p-4" : "p-6"
+                )}>
                     <div className="mx-auto h-full">
                         {children}
                     </div>
