@@ -54,7 +54,7 @@ export function AnimatedBackground() {
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
             {/* Glowing Watermark */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden p-10">
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none overflow-hidden p-10">
                 <motion.h1
                     initial={{ opacity: 0, y: 20 }}
                     animate={{
@@ -76,6 +76,27 @@ export function AnimatedBackground() {
                 >
                     Harichandramathi
                 </motion.h1>
+                <motion.h2
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{
+                        opacity: [0.15, 0.35, 0.15],
+                        scale: [1, 1.01, 1],
+                        textShadow: [
+                            "0 0 10px rgba(255,255,255,0.3)",
+                            "0 0 20px rgba(255,255,255,0.5)",
+                            "0 0 10px rgba(255,255,255,0.3)"
+                        ]
+                    }}
+                    transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: 0.5
+                    }}
+                    className="text-[clamp(0.8rem,3vw,1.5vw)] md:text-[clamp(1.2rem,2vw,2.5vw)] font-bold uppercase tracking-[0.4em] text-white/20 whitespace-nowrap text-center mt-4"
+                >
+                    Web Developer
+                </motion.h2>
             </div>
         </div>
     );
